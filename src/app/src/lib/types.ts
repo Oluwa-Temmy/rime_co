@@ -1,8 +1,13 @@
+export type HeroMediaType = "none" | "image" | "video";
+
 export interface SiteConfig {
   site_name: string;
   tagline: string;
   hero_headline: string;
   hero_subheadline: string;
+  hero_media_type: HeroMediaType;
+  hero_background_image: string | null;
+  hero_background_video: string | null;
   about_headline: string;
   about_body: string;
   contact_email: string;

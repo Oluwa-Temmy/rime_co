@@ -4,6 +4,7 @@ import { ProductCard } from "../components/ProductCard";
 import { api } from "../lib/api";
 import { useSiteConfig } from "../lib/useSiteConfig";
 import type { Product } from "../lib/types";
+import heroPlaceholder from "../assets/bottle-placeholder.jpg";
 import "./Home.css";
 
 export function Home() {
@@ -20,6 +21,23 @@ export function Home() {
   return (
     <>
       <section className="hero">
+        <div className="hero__media">
+          {config.hero_media_type === "video" && config.hero_background_video ? (
+            <video
+              className="hero__media-el"
+              src={config.hero_background_video}
+              autoPlay
+              muted
+              loop
+              playsInline
+            />
+          ) : config.hero_media_type === "image" && config.hero_background_image ? (
+            <img className="hero__media-el" src={config.hero_background_image} alt="" />
+          ) : (
+            <img className="hero__media-el" src={heroPlaceholder} alt="" />
+          )}
+          <div className="hero__overlay" />
+        </div>
         <div className="container hero__inner">
           <p className="hero__eyebrow">{config.tagline}</p>
           <h1 className="hero__headline">{config.hero_headline}</h1>
