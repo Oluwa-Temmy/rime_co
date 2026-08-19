@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { AddToCart } from "../components/AddToCart";
 import { api } from "../lib/api";
 import type { Product } from "../lib/types";
+import { describePromotion } from "../lib/promotions";
 import placeholderImage from "../assets/product-placeholder.jpg";
 import "./ProductDetail.css";
 
@@ -54,6 +55,13 @@ export function ProductDetail() {
           <p className="product-detail__price">
             ${product.price} {product.currency} &middot; {product.volume_ml}ml
           </p>
+          {product.promotions.length > 0 && (
+            <ul className="product-detail__promotions">
+              {product.promotions.map((promo) => (
+                <li key={promo.id}>{describePromotion(promo, product)}</li>
+              ))}
+            </ul>
+          )}
           <p className="product-detail__description">{product.description}</p>
           {product.source_origin && (
             <p className="product-detail__origin">Sourced in {product.source_origin}</p>

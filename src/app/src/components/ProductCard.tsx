@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { AddToCart } from "./AddToCart";
 import type { Product } from "../lib/types";
+import { describePromotion } from "../lib/promotions";
 import placeholderImage from "../assets/product-placeholder.jpg";
 import "./ProductCard.css";
 
@@ -10,6 +11,11 @@ export function ProductCard({ product }: { product: Product }) {
       <Link to={`/products/${product.slug}`} className="product-card__link">
         <div className="product-card__image">
           <img src={product.image ?? placeholderImage} alt={product.name} />
+          {product.promotions.length > 0 && (
+            <span className="product-card__badge">
+              {describePromotion(product.promotions[0], product)}
+            </span>
+          )}
         </div>
         <h3 className="product-card__name">{product.name}</h3>
         <div className="product-card__meta">
