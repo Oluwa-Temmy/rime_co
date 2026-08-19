@@ -1,3 +1,4 @@
+from django.core.validators import FileExtensionValidator
 from django.db import models
 
 
@@ -15,7 +16,12 @@ class Product(models.Model):
     volume_ml = models.PositiveIntegerField(default=750)
     price = models.DecimalField(max_digits=8, decimal_places=2)
     currency = models.CharField(max_length=3, default="USD")
-    image = models.ImageField(upload_to="products/", blank=True, null=True)
+    image = models.ImageField(
+        upload_to="products/",
+        blank=True,
+        null=True,
+        validators=[FileExtensionValidator(allowed_extensions=["png", "jpg", "jpeg"])],
+    )
     source_origin = models.CharField(max_length=150, blank=True)
     is_featured = models.BooleanField(default=False)
     in_stock = models.BooleanField(default=True)
