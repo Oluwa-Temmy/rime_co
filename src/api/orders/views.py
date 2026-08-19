@@ -10,7 +10,16 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import Order
-from .serializers import CheckoutInputSerializer, OrderSerializer
+from .serializers import CartQuoteInputSerializer, CheckoutInputSerializer, OrderSerializer
+
+
+class CartQuoteView(APIView):
+    """Live subtotal/discount/total preview for the cart, before shipping details or payment."""
+
+    def post(self, request):
+        serializer = CartQuoteInputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        return Response(serializer.quote())
 
 
 class StripeConfigView(APIView):

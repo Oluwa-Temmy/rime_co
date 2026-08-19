@@ -1,6 +1,7 @@
 from django.urls import path
 
 from .views import (
+    CartQuoteView,
     CreatePaymentIntentView,
     OrderByPaymentIntentView,
     StripeConfigView,
@@ -9,6 +10,7 @@ from .views import (
 
 urlpatterns = [
     path("stripe-config/", StripeConfigView.as_view(), name="stripe-config"),
+    path("quote/", CartQuoteView.as_view(), name="order-quote"),
     path("create-payment-intent/", CreatePaymentIntentView.as_view(), name="order-create-payment-intent"),
     path(
         "by-payment-intent/<str:payment_intent_id>/",

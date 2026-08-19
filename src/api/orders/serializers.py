@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from products.models import ProductPack
+from products.pricing import load_packs_or_raise, price_cart
 
 from .models import Order, OrderItem
 
@@ -13,7 +13,7 @@ class OrderItemInputSerializer(serializers.Serializer):
 class OrderItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderItem
-        fields = ["product_name", "pack_label", "unit_price", "quantity"]
+        fields = ["product_name", "pack_label", "unit_price", "quantity", "discount_amount"]
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -32,18 +32,34 @@ class OrderSerializer(serializers.ModelSerializer):
             "country",
             "status",
             "total",
+            "discount_total",
             "created_at",
             "items",
         ]
-        read_only_fields = ["id", "status", "total", "created_at"]
+        read_only_fields = ["id", "status", "total", "discount_total", "created_at"]
+
+
+class CartQuoteInputSerializer(serializers.Serializer):
+    """Validates a cart's pack ids + quantities for a live price preview (no order created)."""
+
+    items = OrderItemInputSerializer(many=True)
+
+    def validate_items(self, items):
+        if not items:
+            raise serializers.ValidationError("Cart is empty.")
+        self._packs = load_packs_or_raise(items)
+        return items
+
+    def quote(self):
+        return price_cart(self.validated_data["items"], self._packs)
 
 
 class CheckoutInputSerializer(serializers.ModelSerializer):
     """Validates shipping details + cart items, and builds the pending Order + its items.
 
-    Prices are always taken from ProductPack server-side — the client only ever
-    sends pack ids and quantities, never prices, so a tampered payload can't
-    change what gets charged.
+    Prices and discounts are always computed from ProductPack/Promotion server-side —
+    the client only ever sends pack ids and quantities, never prices, so a tampered
+    payload can't change what gets charged.
     """
 
     items = OrderItemInputSerializer(many=True, write_only=True)
@@ -64,21 +80,15 @@ class CheckoutInputSerializer(serializers.ModelSerializer):
     def validate_items(self, items):
         if not items:
             raise serializers.ValidationError("Cart is empty.")
-        pack_ids = [item["pack_id"] for item in items]
-        packs = ProductPack.objects.select_related("product").in_bulk(pack_ids)
-        missing = set(pack_ids) - set(packs)
-        if missing:
-            raise serializers.ValidationError(f"Unknown pack id(s): {sorted(missing)}")
-        self._packs = packs
+        self._packs = load_packs_or_raise(items)
         return items
 
     def create(self, validated_data):
         items = validated_data.pop("items")
         order = Order.objects.create(**validated_data)
-        total = 0
-        for item in items:
-            pack = self._packs[item["pack_id"]]
-            quantity = item["quantity"]
+        quote = price_cart(items, self._packs)
+        for line in quote["items"]:
+            pack = self._packs[line["pack_id"]]
             OrderItem.objects.create(
                 order=order,
                 product=pack.product,
@@ -86,9 +96,10 @@ class CheckoutInputSerializer(serializers.ModelSerializer):
                 product_name=pack.product.name,
                 pack_label=pack.label,
                 unit_price=pack.price,
-                quantity=quantity,
+                quantity=line["quantity"],
+                discount_amount=line["line_discount"],
             )
-            total += pack.price * quantity
-        order.total = total
-        order.save(update_fields=["total"])
+        order.total = quote["total"]
+        order.discount_total = quote["discount_total"]
+        order.save(update_fields=["total", "discount_total"])
         return order

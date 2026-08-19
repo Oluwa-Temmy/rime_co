@@ -17,6 +17,7 @@ class Order(models.Model):
     country = models.CharField(max_length=100)
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING)
     total = models.DecimalField(max_digits=9, decimal_places=2, default=0)
+    discount_total = models.DecimalField(max_digits=9, decimal_places=2, default=0)
     stripe_session_id = models.CharField(max_length=200, blank=True)
     stripe_payment_intent_id = models.CharField(max_length=200, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -36,10 +37,11 @@ class OrderItem(models.Model):
     pack_label = models.CharField(max_length=40)
     unit_price = models.DecimalField(max_digits=8, decimal_places=2)
     quantity = models.PositiveIntegerField(default=1)
+    discount_amount = models.DecimalField(max_digits=9, decimal_places=2, default=0)
 
     @property
     def line_total(self):
-        return self.unit_price * self.quantity
+        return self.unit_price * self.quantity - self.discount_amount
 
     def __str__(self) -> str:
         return f"{self.quantity} x {self.product_name} ({self.pack_label})"
