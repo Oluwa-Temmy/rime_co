@@ -1,13 +1,29 @@
+from django.core.validators import FileExtensionValidator
 from django.db import models
 
 
 class SiteConfig(models.Model):
     """Singleton holding site-wide brand copy so nothing is hardcoded in the frontend."""
 
+    class HeroMediaType(models.TextChoices):
+        NONE = "none", "None"
+        IMAGE = "image", "Image"
+        VIDEO = "video", "Video"
+
     site_name = models.CharField(max_length=100, default="Rime Co")
     tagline = models.CharField(max_length=200, blank=True)
     hero_headline = models.CharField(max_length=200, blank=True)
     hero_subheadline = models.CharField(max_length=300, blank=True)
+    hero_media_type = models.CharField(
+        max_length=10, choices=HeroMediaType.choices, default=HeroMediaType.NONE
+    )
+    hero_background_image = models.ImageField(upload_to="hero/", blank=True, null=True)
+    hero_background_video = models.FileField(
+        upload_to="hero/",
+        blank=True,
+        null=True,
+        validators=[FileExtensionValidator(allowed_extensions=["mp4", "webm"])],
+    )
     about_headline = models.CharField(max_length=200, blank=True)
     about_body = models.TextField(blank=True)
     contact_email = models.EmailField(blank=True)
