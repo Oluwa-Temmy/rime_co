@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { AddToCart } from "../components/AddToCart";
 import { api } from "../lib/api";
 import type { Product } from "../lib/types";
+import placeholderImage from "../assets/product-placeholder.jpg";
 import "./ProductDetail.css";
 
 export function ProductDetail() {
@@ -44,11 +45,7 @@ export function ProductDetail() {
       </Link>
       <div className="product-detail__grid">
         <div className="product-detail__image">
-          {product.image ? (
-            <img src={product.image} alt={product.name} />
-          ) : (
-            <div className="product-detail__placeholder" aria-hidden="true" />
-          )}
+          <img src={product.image ?? placeholderImage} alt={product.name} />
         </div>
         <div className="product-detail__info">
           <div className="product-detail__category">{product.category}</div>

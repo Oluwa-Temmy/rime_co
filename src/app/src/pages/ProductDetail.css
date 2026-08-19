@@ -38,17 +38,6 @@
   object-fit: cover;
 }
 
-.product-detail__placeholder {
-  width: 40%;
-  height: 70%;
-  background: linear-gradient(
-    180deg,
-    var(--color-surface-muted) 0%,
-    var(--color-surface) 100%
-  );
-  border-radius: 2px 2px 10px 10px;
-}
-
 .product-detail__category {
   font-size: 12px;
   letter-spacing: 0.14em;
