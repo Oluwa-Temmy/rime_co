@@ -1,0 +1,32 @@
+.checkout-page {
+  padding: 60px 0 140px;
+}
+
+.checkout-page h1 {
+  font-size: 40px;
+  margin-bottom: 40px;
+}
+
+.checkout-page--empty {
+  padding: 120px 0;
+  text-align: center;
+  color: var(--color-ink-muted);
+}
+
+.checkout-page--empty a {
+  display: inline-block;
+  margin-top: 16px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+@media (max-width: 640px) {
+  .checkout-page {
+    padding: 40px 0 100px;
+  }
+
+  .checkout-page h1 {
+    font-size: 32px;
+    margin-bottom: 28px;
+  }
+}
