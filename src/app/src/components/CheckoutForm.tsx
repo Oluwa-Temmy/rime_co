@@ -3,8 +3,10 @@ import { FormEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../lib/api";
 import { useCart } from "../lib/cart";
+import { useCartQuote } from "../lib/useCartQuote";
 import type { ShippingDetails } from "../lib/types";
 import { OrderSummary } from "./OrderSummary";
+import { ShippingOptions } from "./ShippingOptions";
 import "./CheckoutForm.css";
 
 const emptyShipping: ShippingDetails = {
@@ -22,13 +24,16 @@ export function CheckoutForm() {
   const elements = useElements();
   const navigate = useNavigate();
   const { lines, subtotal, clear } = useCart();
+  const quote = useCartQuote(lines);
+  const payAmount = quote ? Number(quote.total) : subtotal;
   const [shipping, setShipping] = useState<ShippingDetails>(emptyShipping);
+  const [shippingMethod, setShippingMethod] = useState("standard");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    elements?.update({ amount: Math.round(subtotal * 100) });
-  }, [elements, subtotal]);
+    elements?.update({ amount: Math.round(payAmount * 100) });
+  }, [elements, payAmount]);
 
   function updateField<K extends keyof ShippingDetails>(key: K, value: string) {
     setShipping((prev) => ({ ...prev, [key]: value }));
@@ -148,17 +153,24 @@ export function CheckoutForm() {
         </label>
       </div>
 
+      <div className="checkout-shipping-options">
+        <h2>Shipping method</h2>
+        <ShippingOptions value={shippingMethod} onChange={setShippingMethod} />
+      </div>
+
       <div className="checkout-summary">
         <h2>Order summary</h2>
-        <OrderSummary />
+        <OrderSummary quote={quote} />
+      </div>
 
-        <h2 className="checkout-summary__payment-heading">Payment</h2>
+      <div className="checkout-payment-section">
+        <h2>Payment</h2>
         <div className="checkout-payment">
-          <PaymentElement />
+          <PaymentElement options={{ layout: { type: "accordion", radios: "always" } }} />
         </div>
 
         <button type="submit" className="checkout-pay-button" disabled={!stripe || submitting}>
-          {submitting ? "Processing…" : `Pay $${subtotal.toFixed(2)}`}
+          {submitting ? "Processing…" : `Pay $${payAmount.toFixed(2)}`}
         </button>
         {error && <p className="checkout-field__error">{error}</p>}
       </div>

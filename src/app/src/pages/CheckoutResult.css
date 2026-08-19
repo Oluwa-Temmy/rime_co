@@ -39,6 +39,12 @@
   font-weight: 500;
 }
 
+.checkout-result__row--discount {
+  color: #2f8f5b;
+  border-top: 1px solid var(--color-border);
+  margin-top: 4px;
+}
+
 .checkout-result__link {
   display: inline-block;
   text-decoration: underline;

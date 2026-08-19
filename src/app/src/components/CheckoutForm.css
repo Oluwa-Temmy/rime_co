@@ -1,24 +1,38 @@
 .checkout-page__grid {
   display: grid;
   grid-template-columns: 1fr 1.1fr;
+  grid-template-areas:
+    "shipping summary"
+    "shipoptions payment";
   gap: 64px;
   align-items: start;
 }
 
 .checkout-shipping h2,
-.checkout-summary h2 {
+.checkout-shipping-options h2,
+.checkout-summary h2,
+.checkout-payment-section h2 {
   font-size: 20px;
   margin-bottom: 24px;
 }
 
-.checkout-summary__payment-heading {
-  margin-top: 36px;
-}
-
 .checkout-shipping {
+  grid-area: shipping;
   display: flex;
   flex-direction: column;
   gap: 20px;
+}
+
+.checkout-shipping-options {
+  grid-area: shipoptions;
+}
+
+.checkout-summary {
+  grid-area: summary;
+}
+
+.checkout-payment-section {
+  grid-area: payment;
 }
 
 .checkout-field-row {
@@ -83,6 +97,11 @@
 @media (max-width: 800px) {
   .checkout-page__grid {
     grid-template-columns: 1fr;
+    grid-template-areas:
+      "summary"
+      "shipping"
+      "shipoptions"
+      "payment";
     gap: 48px;
   }
 }

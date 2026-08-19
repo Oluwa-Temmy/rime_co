@@ -61,9 +61,15 @@ export function CheckoutSuccess() {
               <span>
                 {item.quantity} &times; {item.product_name} — {item.pack_label}
               </span>
-              <span>${(Number(item.unit_price) * item.quantity).toFixed(2)}</span>
+              <span>${(Number(item.unit_price) * item.quantity - Number(item.discount_amount)).toFixed(2)}</span>
             </div>
           ))}
+          {Number(order.discount_total) > 0 && (
+            <div className="checkout-result__row checkout-result__row--discount">
+              <span>Discount</span>
+              <span>−${Number(order.discount_total).toFixed(2)}</span>
+            </div>
+          )}
         </div>
       )}
 

@@ -1,6 +1,7 @@
 import { API_BASE_URL } from "../constants";
 import type {
   CartLine,
+  CartQuote,
   ContactPayload,
   Order,
   PaymentIntentResponse,
@@ -33,6 +34,11 @@ export const api = {
       body: JSON.stringify(payload),
     }),
   getStripeConfig: () => request<StripeConfig>("/orders/stripe-config/"),
+  getCartQuote: (items: { pack_id: number; quantity: number }[]) =>
+    request<CartQuote>("/orders/quote/", {
+      method: "POST",
+      body: JSON.stringify({ items }),
+    }),
   createPaymentIntent: (shipping: ShippingDetails, items: CartLine[]) =>
     request<PaymentIntentResponse>("/orders/create-payment-intent/", {
       method: "POST",

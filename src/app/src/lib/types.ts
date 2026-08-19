@@ -23,6 +23,18 @@ export interface ProductPack {
   price: string;
 }
 
+export type PromotionType = "bogo" | "pack_percent";
+
+export interface Promotion {
+  id: number;
+  name: string;
+  promo_type: PromotionType;
+  pack: number | null;
+  buy_quantity: number;
+  get_quantity: number;
+  discount_percent: string | null;
+}
+
 export interface Product {
   id: number;
   name: string;
@@ -38,6 +50,7 @@ export interface Product {
   is_featured: boolean;
   in_stock: boolean;
   packs: ProductPack[];
+  promotions: Promotion[];
 }
 
 export interface ContactPayload {
@@ -82,12 +95,30 @@ export interface OrderItem {
   pack_label: string;
   unit_price: string;
   quantity: number;
+  discount_amount: string;
 }
 
 export interface Order extends ShippingDetails {
   id: number;
   status: "pending" | "paid";
   total: string;
+  discount_total: string;
   created_at: string;
   items: OrderItem[];
+}
+
+export interface CartQuoteItem {
+  pack_id: number;
+  quantity: number;
+  unit_price: string;
+  line_subtotal: string;
+  line_discount: string;
+  line_total: string;
+}
+
+export interface CartQuote {
+  subtotal: string;
+  discount_total: string;
+  total: string;
+  items: CartQuoteItem[];
 }
